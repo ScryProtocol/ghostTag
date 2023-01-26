@@ -61,11 +61,11 @@ const PolyA = '0x00f0feed50dcdf57b4f1b532e8f5e7f291e0c84b'
 const PolyN = '0x99029716DEeE316894DC8ce4f55Ab066222AACe6'
 
 const envVars = {
-  chainn:SepC,//chainn,
-  rpc: SepRPC,
+  chainn:PolyC,//chainn,
+  rpc: PolyRPC,
     createn: PolyN,
     contractn: SepA,
-    menun:SepM
+    menun:PolyM
 }
 
 export default envVars
