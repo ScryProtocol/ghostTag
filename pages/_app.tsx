@@ -141,12 +141,12 @@ function useData() {
   const [wallT, setwallT] = useState();
   let addrst = 0
   const router = useRouter()
-  const { walladdrs } = router.query
+  const { addrs } = router.query
   // State to keep track of whether the dialog is open
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  if (walladdrs != null && addrst == 0) {
+  if (addrs != null && addrst == 0) {
     // @ts-ignore
-    contractaddrs = walladdrs
+    contractaddrs = addrs
     Contract = new ethers.Contract(contractaddrs, Abi, signerw);
     addrst = 1
   }
@@ -171,7 +171,7 @@ function useData() {
         Decimals = []
         UpdateInterval = []
         let nt = [];
-        for (var i = 0; i < 90; i++) {
+        for (var i = 0; i < length; i++) {
           nt.push(i);
         } let feedData = await Contract.getFeedList(nt)
         let feedInfo = await Contract.getFeeds(nt)
@@ -229,7 +229,7 @@ function useData() {
 
       if (FValue[n] != null) {
 
-        let TT = new Date(Last[n] ).toLocaleString()
+        let TT = new Date(Last[n]).toLocaleString()
         upd[n] = String(TT)
         t0[n] = (<Grid xs={4}><Card><h2 className="text-2xl text-center font-bold justify-center light:text-gray-800 " style={{ color: '#50afff' }}>{FName[n]}
         </h2>
@@ -259,14 +259,17 @@ function useData() {
 const App = ({ Component, pageProps }: AppProps) => {
   function handleChangeWall(event: SelectChangeEvent<string>) {
     const values = event.target.value;
-    setWall(values);
-
     window.location.replace('./' + '?addrs=' + values)
 
   }
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const values = event.target.value;
+    if (ethers.utils.isAddress(values)) {
+      window.location.replace('./' + '?addrs=' + values)
+    }
+  }
   const [unlocktext, set_unlocktext] = useState("Please Unlock Wallet");
   // notify function call
-
   // await // MetaMask requires requesting permission to connect users accounts
 
   const handleOpenA = () => {
@@ -276,7 +279,6 @@ const App = ({ Component, pageProps }: AppProps) => {
     setOpenA(false);
   };
   const [openA, setOpenA] = useState(false);
-  const [wallAddrs, setWall] = useState('0x00f0feed50dcdf57b4f1b532e8f5e7f291e0c84b');
   return (
 
     <ThemeProvider attribute="class">
@@ -286,7 +288,11 @@ const App = ({ Component, pageProps }: AppProps) => {
             <Box sx={{ flexGrow: 1 }} className="left-6 top-10 m-auto">
               <Grid container spacing={1}>
                 <Grid xs={2} className="left-6 top-12 m-auto">
-                  <FormControl>
+                  <FormControl style={{
+                    position: 'absolute',
+                    top: 10,
+                    left: 0
+                  }}>
                     <InputLabel id="demo-simple-select-label">Choose Oracle</InputLabel>
                     <Select
                       labelId="select-label"
@@ -299,9 +305,16 @@ const App = ({ Component, pageProps }: AppProps) => {
                       {menun}
                     </Select>
                   </FormControl>
+                </Grid><Grid xs={6}>
+                  <TextField style={{
+                    position: 'absolute',
+                    top: 10,
+                    left: '50%',
+                    transform: 'translateX(-50%)'
+                  }} className="w-200"
+                    id="outlined-basic" label="Search Oracle Address" variant="outlined" onChange={handleChange} />
 
                 </Grid>
-
                 <Grid xs={3}>
                   <Grid container spacing={0}>
                     <Grid xs={2}>
@@ -322,7 +335,8 @@ const App = ({ Component, pageProps }: AppProps) => {
                         <img src='https://bridge.arbitrum.io/static/media/ArbitrumOneLogo.abae01ba.svg' style={{ width: 42 }}>
                         </img></a>
                     </Grid></Grid>
-                </Grid></Grid></Box>
+                </Grid>
+              </Grid></Box>
             <Component {...pageProps} />
             <Dialog
               open={openA}

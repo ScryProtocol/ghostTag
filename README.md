@@ -1,9 +1,6 @@
 # 
 
 ## Contract and source
-
-## Creating your own
-
+## Creating your own wall
 ## dApp
-
 ## Socials
