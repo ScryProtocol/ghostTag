@@ -331,8 +331,8 @@ const App = ({ Component, pageProps }: AppProps) => {
                         <img src='https://static.vecteezy.com/system/resources/previews/010/838/144/original/cute-cartoon-sea-animal-dolphin-character-free-png.png' style={{ width: 42 }}>
                         </img></a>
                     </Grid><Grid xs={2}>
-                      <a href='https://ARB.dapp.scry.finance/'>
-                        <img src='https://bridge.arbitrum.io/static/media/ArbitrumOneLogo.abae01ba.svg' style={{ width: 42 }}>
+                      <a href='https://optimism.dapp.scry.finance/'>
+                        <img src='https://cryptologos.cc/logos/optimism-ethereum-op-logo.png?v=024' style={{ width: 42 }}>
                         </img></a>
                     </Grid></Grid>
                 </Grid>
