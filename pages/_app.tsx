@@ -334,6 +334,11 @@ const App = ({ Component, pageProps }: AppProps) => {
                       <a href='https://optimism.dapp.scry.finance/'>
                         <img src='https://cryptologos.cc/logos/optimism-ethereum-op-logo.png?v=024' style={{ width: 42 }}>
                         </img></a>
+                    </Grid>
+                  <Grid xs={2}>
+                      <a href='https://fantom.dapp.scry.finance/'>
+                        <img src='https://cryptologos.cc/logos/fantom-ftm-logo.png?v=024' style={{ width: 42 }}>
+                        </img></a>
                     </Grid></Grid>
                 </Grid>
               </Grid></Box>
