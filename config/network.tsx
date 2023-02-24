@@ -60,9 +60,9 @@ const A = '0xE565f05422481345b5Fad564DD9Ab7B0cE3Ec017'
 const PolyN = '0x99029716DEeE316894DC8ce4f55Ab066222AACe6'
 
 const envVars = {
-  chainn:PolyC,//chainn,
-  rpc: RPC,
-    createn: PolyN,
+  chainn:SepC,//chainn,
+  rpc: SepRPC,
+    createn: SepN,
     contractn: A,
     menun:M
 }
