@@ -11,24 +11,24 @@ import { useEffect, useState } from "react";
 import React from 'react';
 
 const C: Chain = {
-  id: 5,
-  name: 'Goerli',
-  network: 'goerli',
-  iconUrl: 'https://cryptologos.cc/logos/fantom-ftm-logo.svg?v=023',
+  id: 8453,
+  name: 'Base',
+  network: 'Base',
+  iconUrl: 'https://cryptologos.cc/logos/ethereum-eth.svg?v=023',
   iconBackground: '#fff',
   nativeCurrency: {
     decimals: 18,
-    name: 'Fantom',
-    symbol: 'FTM',
+    name: 'ethereum',
+    symbol: 'eth',
   },
   rpcUrls: {
-    default: 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    default: 'https://developer-access-mainnet.base.org/',
   },
   testnet: true,
 };
-const RPC = 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'
-const A = '0x7Bae4f06a69C7E6664E52C71465d19ab946F0377'
-const M = <MenuItem value={'0x7Bae4f06a69C7E6664E52C71465d19ab946F0377'}>Main</MenuItem>
+const RPC = 'https://developer-access-mainnet.base.org/'
+const A = '0x8517d3E3801F69c1F446dd41E71B37E8b8598367'
+const M = <MenuItem value={'0x8517d3E3801F69c1F446dd41E71B37E8b8598367'}>Main</MenuItem>
 const BSCC: Chain = {
   id: 56,
   name: 'Binance Chain',
@@ -60,7 +60,6 @@ const envVars = {
   chainn:C,//chainn,
   rpc: RPC,
     createn: N,
-
     contractn: A,
     menun:M
 }
