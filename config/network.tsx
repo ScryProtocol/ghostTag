@@ -26,7 +26,7 @@ const C: Chain = {
   },
   testnet: true,
 };
-const RPC = 'https://arbitrum.llamarpc.com	'
+const RPC = 'https://arbitrum.llamarpc.com'
 const A = '0x052DcB245B9C704dd7fD9642CFAC50710c3B5b6E'
 const M = <MenuItem value={'0x8517d3E3801F69c1F446dd41E71B37E8b8598367'}>Main</MenuItem>
 const BSCC: Chain = {
