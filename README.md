@@ -130,6 +130,7 @@ start(callback)
 ```
 
 **callback** (function): A callback function to handle the parsed data.
+```
 callback (function): A callback function to handle the parsed data. Receives an object containing the following details:
 blockNumber: The block number containing the transaction.
 txHash: The hash of the transaction.
@@ -140,6 +141,7 @@ timestamp: The timestamp of the block containing the transaction.
 dataHex: The hex-encoded data after the tag.
 dataStr: The string-encoded data after the tag.
 parsedData: The parsed key-value pairs from the data.
+```
 
 ### TaggedTransaction
 
