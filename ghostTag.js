@@ -137,15 +137,19 @@ class GhostTagStreamer {
 
 // TaggedTransaction and TaggedContract Classes
 class TaggedTransaction {
-    constructor(promise, contract, fnName, args) {
-        this.promise = promise;
+    constructor(contract, fnName, args) {
         this.contract = contract;
         this.fnName = fnName;
         this.args = args;
     }
 
     async tag(tag) {
-        const resolvedTx = await this.promise;
+        // Extract the value if provided in the arguments
+        let value = 0n;
+        if (this.args.length > 0 && typeof this.args[this.args.length - 1] === 'object' && 'value' in this.args[this.args.length - 1]) {
+            value = this.args[this.args.length - 1].value;
+            this.args.pop(); // Remove the options object from the arguments
+        }
 
         // Encode the function data
         const data = this.contract.interface.encodeFunctionData(this.fnName, this.args);
@@ -154,18 +158,23 @@ class TaggedTransaction {
         const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
         const taggedData = data + predefinedTagHex + this.toHex(tag).slice(2);
 
-        // Send the transaction with the tagged data
+        // Send the transaction with the tagged data and value
         const tx = await this.contract.runner.sendTransaction({
             to: await this.contract.getAddress(),
             data: taggedData,
-            value: resolvedTx.value || 0n,
+            value: value,
         });
 
         return tx;
     }
 
     async hextag(tag) {
-        const resolvedTx = await this.promise;
+        // Extract the value if provided in the arguments
+        let value = 0n;
+        if (this.args.length > 0 && typeof this.args[this.args.length - 1] === 'object' && 'value' in this.args[this.args.length - 1]) {
+            value = this.args[this.args.length - 1].value;
+            this.args.pop(); // Remove the options object from the arguments
+        }
 
         // Encode the function data
         const data = this.contract.interface.encodeFunctionData(this.fnName, this.args);
@@ -174,11 +183,11 @@ class TaggedTransaction {
         const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
         const taggedData = data + predefinedTagHex + tag;
 
-        // Send the transaction with the tagged data
+        // Send the transaction with the tagged data and value
         const tx = await this.contract.runner.sendTransaction({
             to: await this.contract.getAddress(),
             data: taggedData,
-            value: resolvedTx.value || 0n,
+            value: value,
         });
 
         return tx;
@@ -196,10 +205,7 @@ class TaggedContract {
         return new Proxy(this, {
             get: (target, prop, receiver) => {
                 if (typeof target.contract[prop] === 'function') {
-                    return (...args) => {
-                        const promise = target.contract[prop](...args);
-                        return new TaggedTransaction(promise, target.contract, prop, args);
-                    };
+                    return (...args) => new TaggedTransaction(target.contract, prop, args);
                 }
                 return Reflect.get(target, prop, receiver);
             }
