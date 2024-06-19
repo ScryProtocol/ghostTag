@@ -1,6 +1,7 @@
+const { data } = require('autoprefixer');
 const { ethers } = require('ethers');
 
-// GhostTagStreamer Class
+// GhostTagStreamer Class (unchanged)
 class GhostTagStreamer {
     constructor(rpcUrl, tag, dataKeys = [], silent = false) {
         this.provider = new ethers.JsonRpcProvider(rpcUrl);
@@ -135,15 +136,23 @@ class GhostTagStreamer {
     }
 }
 
-// TaggedTransaction and TaggedContract Classes
+// TaggedTransaction and TaggedContract Classes (unchanged)
 class TaggedTransaction {
-    constructor(contract, fnName, args) {
-        this.contract = contract;
+    constructor(contractOrWallet, fnName, args) {
+        this.contractOrWallet = contractOrWallet;
         this.fnName = fnName;
         this.args = args;
     }
 
     async tag(tag) {
+        if (this.contractOrWallet instanceof ethers.Contract) {
+            return this.tagContractTransaction(tag);
+        } else if (this.contractOrWallet instanceof ethers.Wallet) {
+            return this.tagWalletTransaction(tag);
+        }
+    }
+
+    async tagContractTransaction(tag) {
         // Extract the value if provided in the arguments
         let value = 0n;
         if (this.args.length > 0 && typeof this.args[this.args.length - 1] === 'object' && 'value' in this.args[this.args.length - 1]) {
@@ -152,15 +161,15 @@ class TaggedTransaction {
         }
 
         // Encode the function data
-        const data = this.contract.interface.encodeFunctionData(this.fnName, this.args);
+        const data = this.contractOrWallet.interface.encodeFunctionData(this.fnName, this.args);
 
         // Append the predefined tag and the custom tag
         const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
         const taggedData = data + predefinedTagHex + this.toHex(tag).slice(2);
 
         // Send the transaction with the tagged data and value
-        const tx = await this.contract.runner.sendTransaction({
-            to: await this.contract.getAddress(),
+        const tx = await this.contractOrWallet.runner.sendTransaction({
+            to: await this.contractOrWallet.getAddress(),
             data: taggedData,
             value: value,
         });
@@ -168,7 +177,32 @@ class TaggedTransaction {
         return tx;
     }
 
+    async tagWalletTransaction(tag) {
+        const { to, value, data } = this.args[0];
+        const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
+        const tagHex = this.toHex(tag).slice(2);
+
+        // Ensure `data` is properly formatted
+        const taggedData = data ? data + predefinedTagHex + tagHex : '0x'+predefinedTagHex + tagHex;
+
+        const tx = await this.contractOrWallet.sendTransaction({
+            to,
+            value,
+            data: taggedData,
+        });
+
+        return tx;
+    }
+
     async hextag(tag) {
+        if (this.contractOrWallet instanceof ethers.Contract) {
+            return this.hextagContractTransaction(tag);
+        } else if (this.contractOrWallet instanceof ethers.Wallet) {
+            return this.hextagWalletTransaction(tag);
+        }
+    }
+
+    async hextagContractTransaction(tag) {
         // Extract the value if provided in the arguments
         let value = 0n;
         if (this.args.length > 0 && typeof this.args[this.args.length - 1] === 'object' && 'value' in this.args[this.args.length - 1]) {
@@ -177,17 +211,34 @@ class TaggedTransaction {
         }
 
         // Encode the function data
-        const data = this.contract.interface.encodeFunctionData(this.fnName, this.args);
+        const data = this.contractOrWallet.interface.encodeFunctionData(this.fnName, this.args);
 
         // Append the predefined tag and the hex tag directly
         const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
         const taggedData = data + predefinedTagHex + tag;
 
         // Send the transaction with the tagged data and value
-        const tx = await this.contract.runner.sendTransaction({
-            to: await this.contract.getAddress(),
+        const tx = await this.contractOrWallet.runner.sendTransaction({
+            to: await this.contractOrWallet.getAddress(),
             data: taggedData,
             value: value,
+        });
+
+        return tx;
+    }
+
+    async hextagWalletTransaction(tag) {
+        const { to, value, data } = this.args[0];
+        const predefinedTagHex = '0x67686f7374746167'; // 'ghosttag' in hex
+        const tagHex = tag;
+
+        // Ensure `data` is properly formatted
+        const taggedData = data ? data + predefinedTagHex + tagHex : predefinedTagHex + tagHex;
+
+        const tx = await this.contractOrWallet.sendTransaction({
+            to,
+            value,
+            data: taggedData,
         });
 
         return tx;
@@ -200,12 +251,12 @@ class TaggedTransaction {
 }
 
 class TaggedContract {
-    constructor(contract) {
-        this.contract = contract;
+    constructor(contractOrWallet) {
+        this.contractOrWallet = contractOrWallet;
         return new Proxy(this, {
             get: (target, prop, receiver) => {
-                if (typeof target.contract[prop] === 'function') {
-                    return (...args) => new TaggedTransaction(target.contract, prop, args);
+                if (typeof target.contractOrWallet[prop] === 'function') {
+                    return (...args) => new TaggedTransaction(target.contractOrWallet, prop, args);
                 }
                 return Reflect.get(target, prop, receiver);
             }
@@ -213,4 +264,15 @@ class TaggedContract {
     }
 }
 
-module.exports = { GhostTagStreamer, TaggedContract };
+// TaggedWallet Class
+class TaggedWallet {
+    constructor(wallet) {
+        this.wallet = wallet;
+    }
+
+    sendTransaction(tx) {
+        return new TaggedTransaction(this.wallet, 'sendTransaction', [tx]);
+    }
+}
+
+module.exports = { GhostTagStreamer, TaggedContract, TaggedWallet };
