@@ -1,6 +1,7 @@
-
 # GhostTag
-GhostTag is an npm package for tagging, streaming and filtering Ethereum blockchain transactions that contain specific tags. It includes classes to facilitate tagging transactions and parsing tagged data.
+GhostTag is an npm package for tagging, streaming and filtering Ethereum blockchain transactions that contain specific tags. It includes classes to facilitate tagging transactions and parsing tagged data easily. GhostTags attach data directly to the txs data onchain without affecting the contract and so can be done for any contract/tx on the fly even if already deployed. GhostTags can attach a simple tag aswell as key vals.
+
+The node is able to watch for any tag or key for any EVM.
 <p align="center">
   <img src="./ghostTag.png" alt="GhostTag">
 </p>
@@ -91,6 +92,39 @@ async function main() {
 
 main();
 ```
+To send tagged transactions:
+
+```
+const { ethers } = require('ethers');
+const { TaggedWallet } = require('ghosttag');
+
+async function sendTaggedWalletTransaction() {
+    const provider = new ethers.JsonRpcProvider('https://1rpc.io/holesky');
+    const wallet = new ethers.Wallet('YOUR_PRIVATE_KEY', provider);
+    const taggedWallet = new TaggedWallet(wallet);
+
+    // Example data object to be used as a tag
+    const data = { tag1: 'boop', tag2: 'lol' };
+
+    // Send transaction with a string tag
+    let tx = await taggedWallet.sendTransaction({
+        to: '0x1234567890123456789012345678901234567890',
+        value: ethers.utils.parseEther('0.1')
+    }).tag(JSON.stringify(data));
+    await tx.wait();
+    console.log('Tagged Wallet Transaction Hash:', tx.hash);
+
+    // Send transaction with a hex tag
+    tx = await taggedWallet.sendTransaction({
+        to: '0x1234567890123456789012345678901234567890',
+        value: ethers.utils.parseEther('0.1')
+    }).hextag('1337');
+    await tx.wait();
+    console.log('Tagged Wallet Transaction Hash:', tx.hash);
+}
+
+sendTaggedWalletTransaction();
+```
 
 ## API
 
@@ -130,7 +164,6 @@ start(callback)
 ```
 
 **callback** (function): A callback function to handle the parsed data.
-```
 callback (function): A callback function to handle the parsed data. Receives an object containing the following details:
 blockNumber: The block number containing the transaction.
 txHash: The hash of the transaction.
@@ -141,7 +174,6 @@ timestamp: The timestamp of the block containing the transaction.
 dataHex: The hex-encoded data after the tag.
 dataStr: The string-encoded data after the tag.
 parsedData: The parsed key-value pairs from the data.
-```
 
 ### TaggedTransaction
 
