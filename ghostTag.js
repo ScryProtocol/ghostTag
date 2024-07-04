@@ -52,7 +52,7 @@ class GhostTagStreamer {
             if (block && block.transactions) {
                 block.transactions.forEach((tx) => {
                     const data = tx.input;
-                    const tagIndex = data.indexOf('67686f7374746167' + this.tagHex); // 'ghosttag' + custom tag
+                    const tagIndex = data.indexOf('6773746167' + this.tagHex); // 'ghosttag' + custom tag
 
                     if (tagIndex !== -1) {
                         const dataAfterTag = data.substring(tagIndex + 16 + this.tagHex.length); // Skip 'ghosttag' and custom tag length
@@ -164,7 +164,7 @@ class TaggedTransaction {
         const data = this.contractOrWallet.interface.encodeFunctionData(this.fnName, this.args);
 
         // Append the predefined tag and the custom tag
-        const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
+        const predefinedTagHex = '6773746167'; // 'ghosttag' in hex
         const taggedData = data + predefinedTagHex + this.toHex(tag).slice(2);
 
         // Send the transaction with the tagged data and value
@@ -179,7 +179,7 @@ class TaggedTransaction {
 
     async tagWalletTransaction(tag) {
         const { to, value, data } = this.args[0];
-        const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
+        const predefinedTagHex = '6773746167'; // 'ghosttag' in hex
         const tagHex = this.toHex(tag).slice(2);
 
         // Ensure `data` is properly formatted
@@ -214,7 +214,7 @@ class TaggedTransaction {
         const data = this.contractOrWallet.interface.encodeFunctionData(this.fnName, this.args);
 
         // Append the predefined tag and the hex tag directly
-        const predefinedTagHex = '67686f7374746167'; // 'ghosttag' in hex
+        const predefinedTagHex = '6773746167'; // 'ghosttag' in hex
         const taggedData = data + predefinedTagHex + tag;
 
         // Send the transaction with the tagged data and value
@@ -229,7 +229,7 @@ class TaggedTransaction {
 
     async hextagWalletTransaction(tag) {
         const { to, value, data } = this.args[0];
-        const predefinedTagHex = '0x67686f7374746167'; // 'ghosttag' in hex
+        const predefinedTagHex = '0x6773746167'; // 'ghosttag' in hex
         const tagHex = tag;
 
         // Ensure `data` is properly formatted
