@@ -1,4 +1,3 @@
-const { data } = require('autoprefixer');
 const { ethers } = require('ethers');
 
 // GhostTagStreamer Class (unchanged)
