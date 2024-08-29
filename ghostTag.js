@@ -150,31 +150,45 @@ class TaggedTransaction {
             return this.tagWalletTransaction(tag);
         }
     }
-
-    async tagContractTransaction(tag) {
-        // Extract the value if provided in the arguments
-        let value = 0n;
-        if (this.args.length > 0 && typeof this.args[this.args.length - 1] === 'object' && 'value' in this.args[this.args.length - 1]) {
-            value = this.args[this.args.length - 1].value;
-            this.args.pop(); // Remove the options object from the arguments
-        }
-
-        // Encode the function data
-        const data = this.contractOrWallet.interface.encodeFunctionData(this.fnName, this.args);
-
-        // Append the predefined tag and the custom tag
-        const predefinedTagHex = '6773746167'; // 'ghosttag' in hex
-        const taggedData = data + predefinedTagHex + this.toHex(tag).slice(2);
-
-        // Send the transaction with the tagged data and value
-        const tx = await this.contractOrWallet.runner.sendTransaction({
-            to: await this.contractOrWallet.getAddress(),
-            data: taggedData,
-            value: value,
-        });
-
-        return tx;
+async tagContractTransaction(tag) {
+    let value = 0n;
+    if (this.args.length > 0 && typeof this.args[this.args.length - 1] === 'object' && 'value' in this.args[this.args.length - 1]) {
+        value = this.args[this.args.length - 1].value;
+        this.args.pop();
     }
+
+    const data = this.contractOrWallet.interface.encodeFunctionData(this.fnName, this.args);
+    const predefinedTagHex = '6773746167'; // 'ghosttag' in hex
+    const taggedData = data + predefinedTagHex + this.toHex(tag).slice(2);
+
+    const tx = await this.contractOrWallet.signer.sendTransaction({
+        to: this.contractOrWallet.address, // Use the contract address
+        data: taggedData,
+        value: value,
+    });
+
+    return tx;
+}
+async tagContractTransaction(tag) {
+    let value = 0n;
+    if (this.args.length > 0 && typeof this.args[this.args.length - 1] === 'object' && 'value' in this.args[this.args.length - 1]) {
+        value = this.args[this.args.length - 1].value;
+        this.args.pop();
+    }
+
+    const data = this.contractOrWallet.interface.encodeFunctionData(this.fnName, this.args);
+    const predefinedTagHex = '6773746167'; // 'ghosttag' in hex
+    const taggedData = data + predefinedTagHex + this.toHex(tag).slice(2);
+
+    const tx = await this.contractOrWallet.signer.sendTransaction({
+        to: this.contractOrWallet.address, // Use the contract address
+        data: taggedData,
+        value: value,
+    });
+
+    return tx;
+}
+
 
     async tagWalletTransaction(tag) {
         const { to, value, data } = this.args[0];
@@ -273,5 +287,4 @@ class TaggedWallet {
         return new TaggedTransaction(this.wallet, 'sendTransaction', [tx]);
     }
 }
-
 module.exports = { GhostTagStreamer, TaggedContract, TaggedWallet };
